@@ -1,12 +1,20 @@
-const { Db } = require("mongodb");
+const {
+  Db
+} = require("mongodb");
 
 const router = require("koa-router")();
 
 router.prefix("/api/chat");
 
 router.post("/addFriend", async (ctx) => {
-  const { account, friendAccount } = await ctx.request.body;
-  console.log({ account, friendAccount });
+  const {
+    account,
+    friendAccount
+  } = await ctx.request.body;
+  console.log({
+    account,
+    friendAccount
+  });
   const friendInfo = await DB.findOne("user", {
     account: friendAccount,
   });
@@ -29,8 +37,8 @@ router.post("/addFriend", async (ctx) => {
       const res = await DB.insert("relations", {
         account,
         friendAccount,
-        friendNickName:friendInfo.nickName,
-        friendProfile:friendInfo.profile
+        friendNickName: friendInfo.nickName,
+        friendProfile: friendInfo.profile
       });
       ctx.body = {
         status: 1,
@@ -41,7 +49,9 @@ router.post("/addFriend", async (ctx) => {
   }
 });
 router.get("/fetchFriends", async (ctx) => {
-  const { account } = ctx.query;
+  const {
+    account
+  } = ctx.query;
   const friends = await DB.find("relations", {
     account,
   });
@@ -55,9 +65,12 @@ router.get("/fetchFriends", async (ctx) => {
 }); // 数组为空可能会报错或者有什么bug，要测试
 
 router.post("/creatRoom", async (ctx) => {
-  const { roomName, profile } = await ctx.request.body;
+  const {
+    roomName,
+    profile
+  } = await ctx.request.body;
 
-  const res = DB.insert("rooms", {
+  const res = await DB.insert("rooms", {
     roomName,
     profile,
     roomNumber: Date.now(),
@@ -69,7 +82,10 @@ router.post("/creatRoom", async (ctx) => {
   };
 });
 router.post("/joinRoom", async (ctx) => {
-  const { roomNumber, account } = ctx.query;
+  const {
+    roomNumber,
+    account
+  } = ctx.query;
   const room = await DB.findOne("rooms", {
     roomNumber,
   });
@@ -103,8 +119,10 @@ router.post("/joinRoom", async (ctx) => {
 });
 // localhost:3030/api/chat/fetchUserRooms?account=admin1
 router.get("/fetchUserRooms", async (ctx) => {
-  const { account } = ctx.query;
-  const rooms = DB.find("roomRelations", {
+  const {
+    account
+  } = ctx.query;
+  const rooms = await DB.find("roomRelations", {
     account,
   });
   ctx.body = {
@@ -116,8 +134,10 @@ router.get("/fetchUserRooms", async (ctx) => {
   };
 });
 router.get("/fetchRoomMembers", async (ctx) => {
-  const { roomNumber } = ctx.query;
-  const users = DB.find("roomRelations", {
+  const {
+    roomNumber
+  } = ctx.query;
+  const users = await DB.find("roomRelations", {
     roomNumber,
   });
   ctx.body = {
@@ -125,6 +145,28 @@ router.get("/fetchRoomMembers", async (ctx) => {
     msg: "加入群的用户列表",
     data: {
       users,
+    },
+  };
+});
+
+router.get("/fetchMessage", async (ctx) => {
+  const {
+    account
+  } = ctx.query;
+  const messageList = await DB.find("message", {
+    $or: [{
+      from: account
+    }, {
+      to: account
+    }]
+  });
+  console.log('messageList messageList messageList messageList messageList messageList messageList messageList messageList');
+  console.log(messageList);
+  ctx.body = {
+    status: 1,
+    msg: "所有关于用户的消息，真要上线的话必须优化",
+    data: {
+      messageList,
     },
   };
 });

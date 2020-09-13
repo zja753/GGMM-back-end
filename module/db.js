@@ -27,7 +27,7 @@ class Db {
     });
   }
   async insert(collectionName, data) {
-    data.careat_time = Date.now();
+    data.create_time = Date.now();
     data.update_time = Date.now();
     data.status = 1;
     return new Promise(async (resolve, reject) => {

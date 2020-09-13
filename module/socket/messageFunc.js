@@ -23,6 +23,9 @@ module.exports = function (io, socket, users) {
         isGroup,
       });
       if (!isGroup) {
+        console.log('ssssssssssssssssssssssssssssssss?');
+        console.log(users);
+        console.log(data);
         if (users[data.to])
           socket.to(users[data.to]).emit("receiveMessage", data);
       } else {

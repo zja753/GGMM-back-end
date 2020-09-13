@@ -8,12 +8,22 @@ module.exports = function (io, socket, users) {
     // !!!!!!!  登录以后应该把账号绑定 socket.id 存入 users
   });
   socket.on("updataMessage", async function (account) {
-    messageList = await DB.find("message", { to: account, status: 1 });
+    messageList = await DB.find("message", {
+      $or: [{
+        from: account
+      }, {
+        to: account
+      }],
+      status: 1,
+    });
     console.log("updataMessage", messageList);
     socket.emit("updata-message", messageList);
   });
   socket.on("updataRequest", async function (account) {
-    requestList = await DB.find("request", { to: account, status: 1 });
+    requestList = await DB.find("request", {
+      to: account,
+      status: 1
+    });
     console.log("updataRequest", requestList);
     socket.emit("updata-request", requestList);
   });

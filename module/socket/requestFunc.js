@@ -64,8 +64,8 @@ module.exports = function (io, socket, users) {
   socket.on("agreeFriendRequest", async function (request) {
     // 是在被请求的用户那里同意的好友请求  所以 to 是触发这个函数的主体
     const { from, to } = request;
-    addFriend(from, to, socket, socket.to(users[from]));
     addFriend(to, from, socket, socket);
+    addFriend(from, to, socket, socket.to(users[from]));
     await DB.update("request", { from, to, status: 1 }, { status: 0 });
     if (users[from]) {
       const friendList = await DB.find("relations", {
